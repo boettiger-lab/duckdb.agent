@@ -4,10 +4,13 @@
 \alias{create_prompt}
 \title{create_prompt}
 \usage{
-create_prompt(tbl, additional_instructions = "")
+create_prompt(
+  con = duckdbfs::cached_connection(),
+  additional_instructions = ""
+)
 }
 \arguments{
-\item{tbl}{a remote table connection}
+\item{con}{a database connection}
 
 \item{additional_instructions}{length-1 character string containing
 additional instructions to the agent.}

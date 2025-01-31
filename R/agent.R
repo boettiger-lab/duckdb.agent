@@ -1,40 +1,7 @@
-#' create_prompt
-#'
-#' Create a system prompt for the LLM agent.
-#'
-#' This uses an a system prompt aimed specifically at open models that
-#' do not natively understand tool-calling or structured data replies.
-#' @param additional_instructions length-1 character string containing
-#' additional instructions to the agent.
-#' @param tbl a remote table connection
-#' @export
-create_prompt <- function(tbl, additional_instructions = "") {
-  table_name <- as.character(tbl$lazy_query$x)
-  schema <- get_schema_md(tbl)
-  head <- head(tbl) |>
-    dplyr::collect() |>
-    knitr::kable() |>
-    paste(collapse = "\n")
-
-  system.file("system-prompt.md",
-              package = "duckdb.agent") |>
-    readr::read_file() |>
-    glue::glue(.open = "<", .close = ">")
-}
 
 
 
-get_schema_md <- function(tbl) {
-  con <- tbl$src$con
-  table_name <- as.character(tbl$lazy_query$x)
 
-  schema <- DBI::dbGetQuery(con,
-                            glue::glue("PRAGMA table_info({table_name})")
-  ) |>
-    knitr::kable() |>
-    paste(collapse = "\n")
-  schema
-}
 
 #' agent_query
 #'
@@ -52,3 +19,60 @@ agent_query <- function(resp, con = duckdbfs::cached_connection()) {
 }
 
 
+#' create_prompt
+#'
+#' Create a system prompt for the LLM agent.
+#'
+#' This uses an a system prompt aimed specifically at open models that
+#' do not natively understand tool-calling or structured data replies.
+#' @param additional_instructions length-1 character string containing
+#' additional instructions to the agent.
+#' @param con a database connection
+#' @export
+create_prompt <- function(con = duckdbfs::cached_connection(),
+                            additional_instructions = "") {
+
+
+  tables <- DBI::dbListTables(con)
+  table_info <-
+    lapply(tables,
+           function(x) {
+                        schema <- tbl_schema_md(x, con)
+                        head <- tbl_head_md(x, con)
+                        table_info <- glue::glue(
+"
+Pay attention to the schema of the table <x>:
+<schema>
+
+Also pay close attention to how data is represented in each column, as seen by the HEAD of table <x>:
+<head>
+", .open = "<", .close = ">")
+
+           }) |>
+    paste(collapse = "\n\n")
+
+  prompt <- system.file("system-prompt.md",
+                        package = "duckdb.agent") |>
+    readr::read_file() |>
+    glue::glue(.open = "<", .close = ">")
+
+  prompt
+}
+
+
+# render table info as markdown tables:
+tbl_head_md <- function(table_name, con) {
+  dplyr::tbl(con, table_name) |>
+    utils::head() |>
+    dplyr::collect() |>
+    knitr::kable() |>
+    paste(collapse = "\n")
+}
+
+tbl_schema_md <- function(table_name, con) {
+  DBI::dbGetQuery(con,
+                  glue::glue("PRAGMA table_info({table_name})")
+  ) |>
+    knitr::kable() |>
+    paste(collapse = "\n")
+}

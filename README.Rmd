@@ -1,0 +1,60 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# duckdb.agent
+
+<!-- badges: start -->
+[![R-CMD-check](https://github.com/boettiger-lab/duckdb.agent/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/boettiger-lab/duckdb.agent/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+The goal of duckdb.agent is to provide convenient utilities for working with chat-generated SQL. 
+
+## Installation
+
+You can install the development version of duckdb.agent from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("boettiger-lab/duckdb.agent")
+```
+
+## Example
+
+
+```{r setup}
+library(duckdb.agent)
+library(duckdbfs)
+library(ellmer)
+
+tracts_url <- "https://minio.carlboettiger.info/public-social-vulnerability/2022-tracts-h3-z6.parquet"
+tracts_h3 <- open_dataset(tracts_url, tblname = "censustracts")
+system_prompt = create_prompt()
+```
+
+
+```{r }
+tracts_agent <- ellmer::chat_vllm(
+    base_url = "https://llm.cirrus.carlboettiger.info/v1/",
+    model = "kosbu/Llama-3.3-70B-Instruct-AWQ",
+    api_key = Sys.getenv("CIRRUS_LLM_KEY"),
+    system_prompt = system_prompt,
+    api_args = list(temperature = 0)
+)
+
+resp <- tracts_agent$chat("Yolo County")
+agent_query(resp)
+```
+
+

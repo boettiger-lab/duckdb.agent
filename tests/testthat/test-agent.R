@@ -2,7 +2,7 @@ test_that("create system prompt", {
   library(duckdbfs)
   con = duckdbfs::cached_connection()
   tbl <- as_dataset(mtcars, con)
-  prompt <- create_prompt(tbl)
+  prompt <- create_prompt(con)
 
   expect_type(prompt, "character")
 })
