@@ -1,0 +1,23 @@
+Package: duckdb.agent
+Title: Chat with your tables
+Version: 0.0.1
+Authors@R: 
+  c(person("Carl", "Boettiger", , "cboettig@gmail.com", c("aut", "cre"),
+         comment = c(ORCID = "0000-0002-1642-628X")))
+Description: Utilites for using language models to perform SQL operations on tables.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Depends: R (>= 4.2)
+Imports: 
+    DBI,
+    readr,
+    glue,
+    jsonlite,
+    knitr,
+    duckdbfs,
+    dplyr
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
