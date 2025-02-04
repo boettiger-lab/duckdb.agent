@@ -44,7 +44,8 @@ create_prompt <- function(con = duckdbfs::cached_connection(),
 Pay attention to the schema of the table <x>:
 <schema>
 
-Also pay close attention to how data is represented in each column, as seen by the HEAD of table <x>:
+Also pay close attention to how data is represented in each column,
+as seen by the HEAD (ommitting large list-type columns, if any) of table <x>:
 <head>
 ", .open = "<", .close = ">")
 
@@ -62,11 +63,20 @@ Also pay close attention to how data is represented in each column, as seen by t
 
 # render table info as markdown tables:
 tbl_head_md <- function(table_name, con) {
-  dplyr::tbl(con, table_name) |>
-    utils::head() |>
-    dplyr::collect() |>
-    knitr::kable() |>
-    paste(collapse = "\n")
+    x <- dplyr::tbl(con, table_name)
+
+    # drop non-list types.
+    # backend doesn't support tidyselect predicates
+    types <- dplyr::collect(utils::head(x,1)) |>
+      purrr::map_lgl(function(x) class(x)[[1]] != "list")
+    keep <- names(types)[types]
+
+    x |>
+      dplyr::select(dplyr::all_of(keep)) |>
+      utils::head() |>
+      dplyr::collect() |>
+      knitr::kable() |>
+      paste(collapse = "\n")
 }
 
 tbl_schema_md <- function(table_name, con) {

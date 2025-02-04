@@ -45,7 +45,7 @@ system_prompt = create_prompt()
 
 
 ```{r }
-tracts_agent <- ellmer::chat_vllm(
+agent <- ellmer::chat_vllm(
     base_url = "https://llm.cirrus.carlboettiger.info/v1/",
     model = "kosbu/Llama-3.3-70B-Instruct-AWQ",
     api_key = Sys.getenv("CIRRUS_LLM_KEY"),
@@ -53,7 +53,7 @@ tracts_agent <- ellmer::chat_vllm(
     api_args = list(temperature = 0)
 )
 
-resp <- tracts_agent$chat("Yolo County")
+resp <- agent$chat("Yolo County")
 agent_query(resp)
 ```
 

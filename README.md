@@ -34,7 +34,7 @@ system_prompt = create_prompt()
 ```
 
 ``` r
-tracts_agent <- ellmer::chat_vllm(
+agent <- ellmer::chat_vllm(
     base_url = "https://llm.cirrus.carlboettiger.info/v1/",
     model = "kosbu/Llama-3.3-70B-Instruct-AWQ",
     api_key = Sys.getenv("CIRRUS_LLM_KEY"),
@@ -42,7 +42,7 @@ tracts_agent <- ellmer::chat_vllm(
     api_args = list(temperature = 0)
 )
 
-resp <- tracts_agent$chat("Yolo County")
+resp <- agent$chat("Yolo County")
 #> {
 #> "query": "CREATE OR REPLACE VIEW yolo_county AS SELECT * FROM censustracts 
 #> WHERE COUNTY = 'Yolo County'",
@@ -55,15 +55,15 @@ agent_query(resp)
 #> [90m# Database: DuckDB v1.1.3 [unknown@Linux 6.9.3-76060903-generic:R 4.4.2/:memory:][39m
 #>    STATE      COUNTY      FIPS        h6             
 #>    [3m[90m<chr>[39m[23m      [3m[90m<chr>[39m[23m       [3m[90m<chr>[39m[23m       [3m[90m<chr>[39m[23m          
-#> [90m 1[39m California Yolo County 06113010102 862832b0fffffff
-#> [90m 2[39m California Yolo County 06113010313 862832b07ffffff
-#> [90m 3[39m California Yolo County 06113010401 8628304afffffff
-#> [90m 4[39m California Yolo County 06113010401 8628304c7ffffff
-#> [90m 5[39m California Yolo County 06113010401 8628304d7ffffff
-#> [90m 6[39m California Yolo County 06113010401 8628304dfffffff
-#> [90m 7[39m California Yolo County 06113010401 8628304f7ffffff
-#> [90m 8[39m California Yolo County 06113010401 862830417ffffff
-#> [90m 9[39m California Yolo County 06113010401 86283041fffffff
-#> [90m10[39m California Yolo County 06113010401 862832b2fffffff
+#> [90m 1[39m California Yolo County 06113010102 862832B0FFFFFFF
+#> [90m 2[39m California Yolo County 06113010313 862832B07FFFFFF
+#> [90m 3[39m California Yolo County 06113010401 8628304AFFFFFFF
+#> [90m 4[39m California Yolo County 06113010401 8628304C7FFFFFF
+#> [90m 5[39m California Yolo County 06113010401 8628304D7FFFFFF
+#> [90m 6[39m California Yolo County 06113010401 8628304DFFFFFFF
+#> [90m 7[39m California Yolo County 06113010401 8628304F7FFFFFF
+#> [90m 8[39m California Yolo County 06113010401 862830417FFFFFF
+#> [90m 9[39m California Yolo County 06113010401 86283041FFFFFFF
+#> [90m10[39m California Yolo County 06113010401 862832B2FFFFFFF
 #> [90m# ℹ more rows[39m
 ```
